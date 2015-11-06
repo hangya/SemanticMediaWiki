@@ -12,6 +12,7 @@ use SMW\SPARQLStore\QueryEngine\Condition\FalseCondition;
 use SMW\SPARQLStore\QueryEngine\Condition\SingletonCondition;
 use SMW\Exporter\Element;
 use SMWQuery as Query;
+use SMW\QueryEngine as IQueryEngine;
 use SMWQueryResult as QueryResult;
 
 /**
@@ -24,7 +25,7 @@ use SMWQueryResult as QueryResult;
  * @author Markus Krötzsch
  * @author mwjames
  */
-class QueryEngine {
+class QueryEngine implements IQueryEngine {
 
 	/// The name of the SPARQL variable that represents the query result.
 	const RESULT_VARIABLE = 'result';

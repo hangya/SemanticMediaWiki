@@ -215,6 +215,7 @@ abstract class Store {
 		/**
 		 * @since 1.6
 		 */
+		wfRunHooks( 'SMW::Store::BeforeDataUpdateComplete', array( $this, $semanticData ) );
 		wfRunHooks( 'SMWStore::updateDataBefore', array( $this, $semanticData ) );
 
 		// Invalidate the page, so data stored on it gets displayed immediately in queries.
@@ -232,6 +233,7 @@ abstract class Store {
 		 * @since 1.6
 		 */
 		wfRunHooks( 'SMWStore::updateDataAfter', array( $this, $semanticData ) );
+		wfRunHooks( 'SMW::Store::AfterDataUpdateComplete', array( $this, $semanticData ) );
 	}
 
 	/**

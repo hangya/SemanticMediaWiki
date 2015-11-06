@@ -268,7 +268,7 @@ class ApplicationFactory {
 	 * @return NamespaceExaminer
 	 */
 	public function getNamespaceExaminer() {
-		return NamespaceExaminer::newFromArray( $this->getSettings()->get( 'smwgNamespacesWithSemanticLinks' ) );
+		return $this->callbackLoader->load( 'NamespaceExaminer' );//NamespaceExaminer::newFromArray( $this->getSettings()->get( 'smwgNamespacesWithSemanticLinks' ) );
 	}
 
 	/**

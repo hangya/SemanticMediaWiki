@@ -3,6 +3,7 @@
 namespace SMW;
 
 use Onoi\Cache\CacheFactory as OnoiCacheFactory;
+use Onoi\BlobStore\BlobStore;
 use SMW\ApplicationFactory;
 use ObjectCache;
 use RuntimeException;
@@ -125,6 +126,87 @@ class CacheFactory {
 		) );
 
 		return $compositeCache;
+	}
+
+	/**
+	 * @since 2.3
+	 *
+	 * @param integer|string $mbeddedQueryResultCacheType
+	 * @param integer $embeddedQueryResultCacheLifetime
+	 *
+	 * @return BlobStore
+	 */
+	public function newEmbeddedQueryResultBlobstore( $embeddedQueryResultCacheType = null, $embeddedQueryResultCacheLifetime = 3600 ) {
+
+		$blobStore = new BlobStore(
+			'smw:qrc:store',
+			$this->newMediaWikiCompositeCache( $embeddedQueryResultCacheType )
+		);
+
+		// If CACHE_NONE is selected, disable the usage
+		$blobStore->setUsageState(
+			$embeddedQueryResultCacheType !== CACHE_NONE
+		);
+
+		$blobStore->setExpiryInSeconds(
+			$embeddedQueryResultCacheLifetime
+		);
+
+		$blobStore->setNamespacePrefix(
+			$this->getCachePrefix()
+		);
+
+		return $blobStore;
+	}
+
+	/**
+	 * @since 2.4
+	 *
+	 * @return EmbeddedQueryResultCache
+	 */
+	public function newEmbeddedQueryResultCache( $embeddedQueryResultCacheType = null, $embeddedQueryResultCacheLifetime = 3600 ) {
+
+		$embeddedQueryResultBlobstore = $this->newEmbeddedQueryResultBlobstore(
+			$embeddedQueryResultCacheType,
+			$embeddedQueryResultCacheLifetime
+		);
+
+		$embeddedQueryResultCache = new EmbeddedQueryResultCache(
+			$embeddedQueryResultBlobstore
+		);
+
+		return $embeddedQueryResultCache;
+	}
+
+	/**
+	 * @since 2.3
+	 *
+	 * @param integer|string $mediaWikiCacheType
+	 * @param integer $valueLookupCacheLifetime
+	 *
+	 * @return BlobStore
+	 */
+	public function newValueLookupBlobstore( $valueLookupCacheType = null, $valueLookupCacheLifetime = 3600 ) {
+
+		$blobStore = new BlobStore(
+			'smw:vl:store',
+			$this->newMediaWikiCompositeCache( $valueLookupCacheType )
+		);
+
+		// If CACHE_NONE is selected, disable the usage
+		$blobStore->setUsageState(
+			$valueLookupCacheType !== CACHE_NONE
+		);
+
+		$blobStore->setExpiryInSeconds(
+			$valueLookupCacheLifetime
+		);
+
+		$blobStore->setNamespacePrefix(
+			$this->getCachePrefix()
+		);
+
+		return $blobStore;
 	}
 
 }

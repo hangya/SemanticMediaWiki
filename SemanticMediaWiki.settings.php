@@ -881,7 +881,7 @@ $GLOBALS['smwgEnabledHttpDeferredJobRequest'] = true;
 # @since 2.3 (experimental)
 # @default false
 ##
-$GLOBALS['smwgEnabledQueryDependencyLinksStore'] = false;
+$GLOBALS['smwgEnabledQueryDependencyLinksStore'] = true;
 ##
 
 ###
@@ -901,8 +901,50 @@ $GLOBALS['smwgPropertyDependencyDetectionBlacklist'] = array( '_MDAT', '_SOBJ' )
 ##
 
 ###
+# This stores subjects that were fetched from the QueryEngine (not the string result
+# generated from a result printer) and allows to improve general page-loading time
+# for articles that contain embedded queries and decrease server load on query requests
+# due to subject list (as to the answer of the query) being served from cache
+# instead of running a live DB/SPARQL query.
+#
+# It is suggested that `smwgEnabledQueryDependencyLinksStore` is enabled to make
+# use of the automatic query results update (and hereof the invalidation of the
+# cache).
+#
+# CACHE_NONE as default means that this feature is disabled
+#
+# @since 2.4 (experimental)
+#
+# @default: CACHE_NONE, users need to actively enable it in order
+# to make use of it
+##
+$GLOBALS['smwgEmbeddedQueryResultCacheType'] = CACHE_NONE;
+##
+
+###
+# Declares the lifetime of a cached item for when `smwgEmbeddedQueryResultCacheType`
+# is enabled.
+#
+# @since 2.4
+##
+$GLOBALS['smwgEmbeddedQueryResultCacheLifetime'] = 60 * 60 * 24; // a day
+##
+
+###
+# If `smwgEnabledQueryDependencyLinksStore` is enabled this setting is not required
+# as results are expected to be automatically purged. In case it is disabled and
+# a user still wants to take advantage of the cache then it is suggested to enable
+# this setting so that results are refreshed (or better the cache is going to be
+# invalidated) by force on an article purge event.
+#
+# @since 2.4
+##
+$GLOBALS['smwgEmbeddedQueryResultCacheRefreshOnPurge'] = false;
+##
+
+###
 # The setting is introduced the keep backwards compatibility with existing Rdf/Turtle
-# exports. The `aux` marker is epxected only used to be used for selected properties
+# exports. The `aux` marker is expected to be used only for selected properties
 # to generate a helper value and not for any other predefined property.
 #
 # Any property that does not explicitly require an auxiliary value (such `_dat`/

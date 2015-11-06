@@ -15,6 +15,7 @@ use SMWQueryResult as QueryResult;
 use SMWDataItem as DataItem;
 use SMWPropertyValue as PropertyValue;
 use SMW\InvalidPredefinedPropertyException;
+use SMW\QueryEngine as IQueryEngine;
 use RuntimeException;
 
 /**
@@ -27,7 +28,7 @@ use RuntimeException;
  * @author Jeroen De Dauw
  * @author mwjames
  */
-class QueryEngine {
+class QueryEngine implements IQueryEngine {
 
 	/**
 	 * @var SQLStore

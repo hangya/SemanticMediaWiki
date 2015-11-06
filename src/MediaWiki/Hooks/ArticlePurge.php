@@ -5,6 +5,7 @@ namespace SMW\MediaWiki\Hooks;
 use SMW\ApplicationFactory;
 use SMW\Cache\CacheFactory;
 use WikiPage;
+use SMW\EventHandler;
 
 /**
  * A function hook being executed before running "&action=purge"
@@ -43,11 +44,13 @@ class ArticlePurge {
 			);
 		}
 
-		if ( $settings->get( 'smwgFactboxCacheRefreshOnPurge' ) ) {
-			$cache->delete(
-				$cacheFactory->getFactboxCacheKey( $pageId )
-			);
-		}
+		$dispatchContext = EventHandler::getInstance()->newDispatchContext();
+		$dispatchContext->set( 'title', $wikiPage->getTitle() );
+
+		EventHandler::getInstance()->getEventDispatcher()->dispatch(
+			'cache.delete.on.article.purge',
+			$dispatchContext
+		);
 
 		return true;
 	}

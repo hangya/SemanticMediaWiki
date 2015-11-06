@@ -10,6 +10,7 @@ use SMW\EventHandler;
 use SMW\NamespaceManager;
 use SMW\SQLStore\EmbeddedQueryDependencyLinksStore;
 use SMW\SQLStore\EmbeddedQueryDependencyListResolver;
+use SMW\EmbeddedQueryResultCache;
 use SMW\DeferredRequestDispatchManager;
 use SMW\PropertyHierarchyLookup;
 use Onoi\HttpRequest\HttpRequestFactory;
@@ -519,6 +520,23 @@ class HookRegistry {
 			);
 
 			return true;
+		};
+
+		$this->handlers['SMW::Store::BeforeQueryResultLookupComplete'] = function ( $store, $query, &$result = null, $queryEngine ) use ( $applicationFactory ) {
+
+			$embeddedQueryResultCache = $applicationFactory->newCacheFactory()->newEmbeddedQueryResultCache(
+				$applicationFactory->getSettings()->get( 'smwgEmbeddedQueryResultCacheType' ),
+				$applicationFactory->getSettings()->get( 'smwgEmbeddedQueryResultCacheLifetime' )
+			);
+
+			$result = $embeddedQueryResultCache->fetchQueryResult(
+				$store,
+				$query,
+				$queryEngine
+			);
+
+			// Suspend further processing by returning false
+			return false;
 		};
 
 		$this->handlers['SMW::Store::AfterQueryResultLookupComplete'] = function ( $store, &$result ) use ( $applicationFactory, $propertyHierarchyLookup ) {

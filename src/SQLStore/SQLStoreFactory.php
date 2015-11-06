@@ -265,29 +265,14 @@ class SQLStoreFactory {
 		$circularReferenceGuard = new CircularReferenceGuard( 'vl:store' );
 		$circularReferenceGuard->setMaxRecursionDepth( 2 );
 
-		$cacheFactory = ApplicationFactory::getInstance()->newCacheFactory();
-
-		$blobStore = new BlobStore(
-			'smw:vl:store',
-			$cacheFactory->newMediaWikiCompositeCache( $GLOBALS['smwgValueLookupCacheType'] )
-		);
-
-		// If CACHE_NONE is selected, disable the usage
-		$blobStore->setUsageState(
-			$GLOBALS['smwgValueLookupCacheType'] !== CACHE_NONE
-		);
-
-		$blobStore->setExpiryInSeconds(
+		$valueLookupBlobstore = ApplicationFactory::getInstance()->newCacheFactory()->newValueLookupBlobstore(
+			$GLOBALS['smwgValueLookupCacheType'],
 			$GLOBALS['smwgValueLookupCacheLifetime']
-		);
-
-		$blobStore->setNamespacePrefix(
-			$cacheFactory->getCachePrefix()
 		);
 
 		$cachedValueLookupStore = new CachedValueLookupStore(
 			$this->store,
-			$blobStore
+			$valueLookupBlobstore
 		);
 
 		$cachedValueLookupStore->setValueLookupFeatures(
